@@ -48,7 +48,7 @@ class CityDataSqlDriver:
         cursor = conn.cursor()
         cursorResult = cursor.execute('select * from ' + TABLE_NAME_SERVICE_CITY)
         for row in cursorResult:
-            data_list.append(raw2Bean((row[1], row[2], row[3]), self.encrypts, self.providers))
+            data_list.append(raw2Bean((row[0], row[1], row[2], row[3]), self.encrypts, self.providers))
         conn.close()
         return data_list
 
@@ -57,6 +57,14 @@ class CityDataSqlDriver:
         cursor = conn.cursor()
         cursorResult = cursor.execute('select * from ' + table_name)
         return cursorResult
+
+    def deleteServiceCityById(self, serviceId):
+        conn = sqlite3.connect('./DBFile/' + DB_NAME)
+        cursor = conn.cursor()
+        cursor.execute('delete from ' + TABLE_NAME_SERVICE_CITY + ' where id= '+str(serviceId))
+        conn.commit()
+        cursor.close()
+        conn.close()
 
 
 if __name__ == '__main__':

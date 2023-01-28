@@ -4,8 +4,9 @@ from DB.EncryptionTypeEnum import EncryptionTypeEnum
 
 
 def raw2Bean(rawData, encryptMap, providerMap):
-    city = rawData[0]
-    encryptionId = str(rawData[1])
-    providerId = str(rawData[2])
-    cityBean = CityConfigBean(city, EncryptionTypeEnum(encryptMap[encryptionId]), DataProviderEnum(providerMap[providerId]))
+    cityId = rawData[0]
+    city = rawData[1]
+    encryptionId = str(rawData[2])
+    providerId = str(rawData[3])
+    cityBean = CityConfigBean(cityId, city, EncryptionTypeEnum(encryptMap[encryptionId]), DataProviderEnum(providerMap[providerId]))
     return cityBean

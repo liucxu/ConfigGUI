@@ -13,6 +13,7 @@ from UI.CreateCityConfigDialog import CreateCityConfigDialog
 class CityConfigUI(QWidget):
     def __init__(self):
         super().__init__()
+        self.provider = CityDataProvider()
         self.buttonsLayout = None
         self.list = QListWidget(self)
         self.list.setStyleSheet("QListWidget::item { border-bottom: 1px solid gray; }")
@@ -71,10 +72,13 @@ class CityConfigUI(QWidget):
     def deleteItem(self):
         self.flagChanged = True
         print('待删除的City信息,name: %s' % self.widget.city.city)
+        self.provider.deleteServiceCity(self.widget.city.cityId)
+        self.initUI()
 
     def initUI(self):
         datas = []
-        CityDataProvider().refreshData(datas)
+        self.provider.refreshData(datas)
+        self.list.clear()
         for index in range(0, len(datas)):
             city = datas[index]
             item = CityConfigItemWidget(city, index)

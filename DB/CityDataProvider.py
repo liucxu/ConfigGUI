@@ -17,4 +17,8 @@ class CityDataProvider:
         for city in self.dataCity:
             out.append(city)
 
+    def deleteServiceCity(self, cityId):
+        self.driver.deleteServiceCityById(cityId)
+        self.initDataFromDB()
+
     # def deleteCityConfig(self, cityInfo:CityConfigBean):
