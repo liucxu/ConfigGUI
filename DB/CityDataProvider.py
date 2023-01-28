@@ -21,4 +21,16 @@ class CityDataProvider:
         self.driver.deleteServiceCityById(cityId)
         self.initDataFromDB()
 
+    def queryEncryptType(self):
+        return self.driver.queryEncryptDic()
+
+    def queryDataProvider(self):
+        return self.driver.queryProvider()
+
+    def createCityConfigInfo(self, city):
+        self.driver.createCityConfigInfo(city)
+        self.initDataFromDB()
+
+    def queryCityByCityName(self, cityName):
+        return self.driver.queryCityInfoByCityName(cityName)
     # def deleteCityConfig(self, cityInfo:CityConfigBean):

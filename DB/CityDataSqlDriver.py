@@ -18,13 +18,13 @@ class CityDataSqlDriver:
     def dbConnect(self):
         self.db = QSqlDatabase.addDatabase(DB_TYPE)
         self.db.setDatabaseName('./DBFile/' + DB_NAME)
-        self.initEncryptDic()
-        self.initProvider()
+        self.queryEncryptDic()
+        self.queryProvider()
 
     def closeDB(self):
         self.db.close()
 
-    def initEncryptDic(self):
+    def queryEncryptDic(self):
         self.encrypts = {}
         conn = sqlite3.connect('./DBFile/' + DB_NAME)
         cursor = conn.cursor()
@@ -32,8 +32,9 @@ class CityDataSqlDriver:
         for row in cursorResult:
             self.encrypts[str(row[1])] = row[2]
         conn.close()
+        return self.encrypts
 
-    def initProvider(self):
+    def queryProvider(self):
         self.providers = {}
         conn = sqlite3.connect('./DBFile/' + DB_NAME)
         cursor = conn.cursor()
@@ -41,6 +42,7 @@ class CityDataSqlDriver:
         for row in cursorResult:
             self.providers[str(row[1])] = row[2]
         conn.close()
+        return self.providers
 
     def queryServiceCity(self):
         data_list = []
@@ -61,11 +63,30 @@ class CityDataSqlDriver:
     def deleteServiceCityById(self, serviceId):
         conn = sqlite3.connect('./DBFile/' + DB_NAME)
         cursor = conn.cursor()
-        cursor.execute('delete from ' + TABLE_NAME_SERVICE_CITY + ' where id= '+str(serviceId))
+        cursor.execute('delete from ' + TABLE_NAME_SERVICE_CITY + ' where id= ' + str(serviceId))
         conn.commit()
         cursor.close()
         conn.close()
 
+    def createCityConfigInfo(self, city):
+        conn = sqlite3.connect('./DBFile/' + DB_NAME)
+        cursor = conn.cursor()
+        sql = 'insert into ' + TABLE_NAME_SERVICE_CITY + '(cityname,encryptTypeId,dataproviderId) values (?,?,?)'
+        data = (city[0], city[1], city[2])
+        cursor.execute(sql, data)
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+    def queryCityInfoByCityName(self,cityName):
+        data_list = []
+        conn = sqlite3.connect('./DBFile/' + DB_NAME)
+        cursor = conn.cursor()
+        cursorResult = cursor.execute('select * from ' + TABLE_NAME_SERVICE_CITY+' WHERE cityname= \''+cityName+'\'')
+        for row in cursorResult:
+            data_list.append(raw2Bean((row[0], row[1], row[2], row[3]), self.encrypts, self.providers))
+        conn.close()
+        return data_list
 
 if __name__ == '__main__':
     sqlDriver = CityDataSqlDriver()
