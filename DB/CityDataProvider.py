@@ -33,4 +33,8 @@ class CityDataProvider:
 
     def queryCityByCityName(self, cityName):
         return self.driver.queryCityInfoByCityName(cityName)
+
+    def updateCityServiceInfo(self, city):
+        self.driver.updateCityServiceInfo(city)
+        self.initDataFromDB()
     # def deleteCityConfig(self, cityInfo:CityConfigBean):

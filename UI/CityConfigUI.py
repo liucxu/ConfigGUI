@@ -3,7 +3,7 @@ from PyQt6.QtCore import QObject
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QListWidget, QListWidgetItem, QHBoxLayout
 
 from Config.UIConfig import BUTTONNAME_CREATE, BUTTONNAME_MODIFY, BUTTONNAME_CONFIRM, NOTIFY_TITLE_DIALOG, \
-    NOTIFY_MSG_DELETE_DIALOG, CREATE_NEW_CITY_CONFIG
+    NOTIFY_MSG_DELETE_DIALOG, CREATE_NEW_CITY_CONFIG, NOTIFY_MSG_NAME_DUPLICATE_DIALOG
 from DB.CityDataProvider import CityDataProvider
 from UI.CityConfigItemUI import CityConfigItemWidget
 from UI.CommonDialog import CommonDialog
@@ -61,8 +61,9 @@ class CityConfigUI(QWidget):
 
     def onDialogUpdateClicked(self):
         self.widget = self.sender()
-        createDialog = CreateCityConfigDialog(self)
-        createDialog.exec()
+        updateDialog = CustomEditDialog(CREATE_NEW_CITY_CONFIG, encryptMap=self.encryptMaps, provider=self.providerMaps,
+                                        updateCity=self.widget.city, updateFun=self.updateItem)
+        updateDialog.exec()
 
     def onConfirmClicked(self):
         createDialog = CreateCityConfigDialog(self)
@@ -84,12 +85,25 @@ class CityConfigUI(QWidget):
         self.provider.deleteServiceCity(self.widget.city.cityId)
         self.initUI()
 
-    def createCityInfo(self, cityInfo):
-        print('')
+    def updateItem(self, city, dialog):
+        updateInfo = (self.widget.city.cityId,) + city
+        if self.validateCityName(updateInfo[1]):
+            self.provider.updateCityServiceInfo(updateInfo)
+            self.initUI()
+            dialog.close()
+        else:
+            alertDialog = CommonDialog(NOTIFY_TITLE_DIALOG, NOTIFY_MSG_NAME_DUPLICATE_DIALOG)
+            alertDialog.exec()
+
+    def createCityInfo(self, cityInfo, dialog):
         if self.validateCityName(cityInfo[0]):
             self.flagChanged = True
             self.provider.createCityConfigInfo(cityInfo)
             self.initUI()
+            dialog.close()
+        else:
+            alertDialog = CommonDialog(NOTIFY_TITLE_DIALOG, NOTIFY_MSG_NAME_DUPLICATE_DIALOG)
+            alertDialog.exec()
 
     def validateCityName(self, cityName):
         datas = self.provider.queryCityByCityName(cityName)

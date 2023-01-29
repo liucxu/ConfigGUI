@@ -7,10 +7,10 @@ class CommonDialog(QDialog):
         super().__init__()
         self.confirm = confirmFun
         self.setWindowTitle(title)
-        QBtn = QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel
+        QBtn = QDialogButtonBox.StandardButton.Ok
         self.buttonBox = QDialogButtonBox(QBtn)
         self.buttonBox.accepted.connect(self.accept)
-        self.buttonBox.rejected.connect(self.reject)
+        # self.buttonBox.rejected.connect(self.reject)
         self.layout = QVBoxLayout()
         message = QLabel(notify)
         self.layout.addWidget(message)

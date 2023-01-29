@@ -6,7 +6,7 @@ from Config.UIConfig import LABEL_CITY_NAME, LABEL_ENCRYPT_TYPE, LABEL_PROVIDER
 
 
 class CustomEditDialog(QDialog):
-    def __init__(self, title='', confirmFun=None, encryptMap=None, provider=None):
+    def __init__(self, title='', confirmFun=None, encryptMap=None, provider=None, updateFun=None, updateCity=None):
         super().__init__()
         self.encryptType = -1
         self.providerId = -1
@@ -47,6 +47,10 @@ class CustomEditDialog(QDialog):
         self.layout.addLayout(self.contentLayout)
         self.layout.addWidget(self.buttonBox)
         self.setLayout(self.layout)
+        self.updateCity = updateCity
+        self.updateFun = updateFun
+        self.initDataForUpdate()
+
 
     def initEncryptComboBox(self):
         for encryptType, encryptName in self.encryptMaps.items():
@@ -65,11 +69,9 @@ class CustomEditDialog(QDialog):
         self.dataProviderComboBox.setModel(self.modelDataProvider)
 
     def OnEncryptIndexChanged(self, encryptType):
-        print('')
         self.encryptType = encryptType
 
     def OndataProviderIndexSelected(self, providerId):
-        print('')
         self.providerId = providerId
 
     def validate(self):
@@ -77,8 +79,23 @@ class CustomEditDialog(QDialog):
             return False
         return True
 
+    def initDataForUpdate(self):
+        if not (self.updateCity is None):
+            self.QLineEditCityName.setText(self.updateCity.city)
+            allEncryptValues = list(self.encryptMaps.values())
+            allProviderValues = list(self.dataProviderMaps.values())
+            for index in range(len(allEncryptValues)):
+                if allEncryptValues[index] == self.updateCity.encryption.value:
+                    self.encryptTypeComboBox.setCurrentIndex(index)
+            for index in range(len(allProviderValues)):
+                if allProviderValues[index] == self.updateCity.provider.value:
+                    self.dataProviderComboBox.setCurrentIndex(index)
+
     def accept(self) -> None:
         if not (self.confirm is None):
             if self.validate():
-                self.confirm((self.QLineEditCityName.text().strip(), self.encryptType, self.providerId))
-        self.close()
+                self.confirm((self.QLineEditCityName.text().strip(), self.encryptType, self.providerId), self)
+        if not (self.updateFun is None):
+            if self.validate():
+                self.updateFun((self.QLineEditCityName.text().strip(), self.encryptType, self.providerId), self)
+        # self.close()

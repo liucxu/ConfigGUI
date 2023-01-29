@@ -78,7 +78,7 @@ class CityDataSqlDriver:
         cursor.close()
         conn.close()
 
-    def queryCityInfoByCityName(self,cityName):
+    def queryCityInfoByCityName(self, cityName):
         data_list = []
         conn = sqlite3.connect('./DBFile/' + DB_NAME)
         cursor = conn.cursor()
@@ -87,6 +87,16 @@ class CityDataSqlDriver:
             data_list.append(raw2Bean((row[0], row[1], row[2], row[3]), self.encrypts, self.providers))
         conn.close()
         return data_list
+
+    def updateCityServiceInfo(self, city):
+        conn = sqlite3.connect('./DBFile/' + DB_NAME)
+        cursor = conn.cursor()
+        sql = 'update ServiceCity set cityname=?,encryptTypeId=?,dataproviderId=? where id='+str(city[0])
+        data = (city[1], city[2], city[3])
+        cursor.execute(sql, data)
+        conn.commit()
+        cursor.close()
+        conn.close()
 
 if __name__ == '__main__':
     sqlDriver = CityDataSqlDriver()
