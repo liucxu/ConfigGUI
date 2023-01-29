@@ -2,9 +2,10 @@ from PyQt6 import QtCore
 from PyQt6.QtCore import QObject
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QListWidget, QListWidgetItem, QHBoxLayout
 
-from Config.UIConfig import BUTTONNAME_CREATE, BUTTONNAME_MODIFY, BUTTONNAME_CONFIRM, NOTIFY_TITLE_DIALOG, \
+from Config.UIConfig import BUTTONNAME_CREATE, BUTTONNAME_MODIFY, BUTTONNAME_UPDATE, NOTIFY_TITLE_DIALOG, \
     NOTIFY_MSG_DELETE_DIALOG, CREATE_NEW_CITY_CONFIG, NOTIFY_MSG_NAME_DUPLICATE_DIALOG
 from DB.CityDataProvider import CityDataProvider
+from Json.GenerateJson import GenerateJson
 from UI.CityConfigItemUI import CityConfigItemWidget
 from UI.CommonDialog import CommonDialog
 from UI.CreateCityConfigDialog import CreateCityConfigDialog
@@ -21,7 +22,7 @@ class CityConfigUI(QWidget):
         self.list.setStyleSheet("QListWidget::item { border-bottom: 1px solid gray; }")
         self.vbox = QVBoxLayout()
         self.createButton = QPushButton(BUTTONNAME_CREATE)
-        self.confirmButton = QPushButton(BUTTONNAME_CONFIRM)
+        self.updateButton = QPushButton(BUTTONNAME_UPDATE)
         self.showMaximized()
         self.initUI()
         self.selectedIndex = -1
@@ -29,6 +30,7 @@ class CityConfigUI(QWidget):
         self.widget = None
         self.encryptMaps = self.provider.queryEncryptType()
         self.providerMaps = self.provider.queryDataProvider()
+        self.jsonUpgrade = GenerateJson()
 
     @DeprecationWarning
     def initUIDeperate(self):
@@ -50,8 +52,8 @@ class CityConfigUI(QWidget):
         self.buttonsLayout = QHBoxLayout()
         self.buttonsLayout.addStretch(1)
         self.buttonsLayout.addWidget(self.createButton)
-        self.buttonsLayout.addWidget(self.confirmButton)
-        self.confirmButton.clicked.connect(self.onConfirmClicked)
+        self.buttonsLayout.addWidget(self.updateButton)
+        self.updateButton.clicked.connect(self.updateClicked)
         self.createButton.clicked.connect(self.onDialogCreateClicked)
 
     def onDialogCreateClicked(self):
@@ -65,9 +67,8 @@ class CityConfigUI(QWidget):
                                         updateCity=self.widget.city, updateFun=self.updateItem)
         updateDialog.exec()
 
-    def onConfirmClicked(self):
-        createDialog = CreateCityConfigDialog(self)
-        createDialog.exec()
+    def updateClicked(self):
+        self.jsonUpgrade.convert2Json()
 
     def onDialogDelClicked(self):
         toConfirmDeleteDialog = CommonDialog(NOTIFY_TITLE_DIALOG, NOTIFY_MSG_DELETE_DIALOG, confirmFun=self.deleteItem)

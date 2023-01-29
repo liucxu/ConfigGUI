@@ -100,4 +100,6 @@ class CityDataSqlDriver:
 
 if __name__ == '__main__':
     sqlDriver = CityDataSqlDriver()
-    sqlDriver.queryServiceCity()
+    cities = sqlDriver.queryServiceCity()
+    # jsonGenerate = GenerateJson()
+    # jsonGenerate.convert2Json(cities)
