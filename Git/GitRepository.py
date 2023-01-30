@@ -1,4 +1,6 @@
 import os
+import time
+
 from git.repo import Repo
 from git.repo.fun import is_git_dir
 
@@ -105,7 +107,7 @@ class GitRepository(object):
         self.repo.git.add('.')
 
     def commit(self):
-        self.repo.git.commit(m='提交信息1')
+        self.repo.git.commit(m=time.strftime('%Y %b %d %H:%M:%S', time.localtime(time.time())))
 
     def sync(self):
         self.add()
